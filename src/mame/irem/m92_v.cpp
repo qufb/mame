@@ -352,13 +352,13 @@ void m92_state::draw_sprites(screen_device &screen, bitmap_ind16 &bitmap, const 
 					{
 						m_gfxdecode->gfx(1)->prio_transpen(bitmap,cliprect,
 								code + s_ptr, color, !flipx, !flipy,
-								464 - x, 240 - (y - row * 16),
+								464 - x, 256 - (y - row * 16),
 								screen.priority(), pri, 0);
 
 						// wrap around x
 						m_gfxdecode->gfx(1)->prio_transpen(bitmap,cliprect,
 								code + s_ptr, color, !flipx, !flipy,
-								464 - x + 512, 240 - (y - row * 16),
+								464 - x + 512, 256 - (y - row * 16),
 								screen.priority(), pri, 0);
 					}
 					else
@@ -426,13 +426,13 @@ void m92_state::ppan_draw_sprites(screen_device &screen, bitmap_ind16 &bitmap, c
 					{
 						m_gfxdecode->gfx(1)->prio_transpen(bitmap,cliprect,
 								code + s_ptr, color, !flipx, !flipy,
-								464 - x, 240 - (y - row * 16),
+								464 - x, 256 - (y - row * 16),
 								screen.priority(), pri, 0);
 
 						// wrap around x
 						m_gfxdecode->gfx(1)->prio_transpen(bitmap,cliprect,
 								code + s_ptr, color, !flipx, !flipy,
-								464 - x + 512, 240 - (y - row * 16),
+								464 - x + 512, 256 - (y - row * 16),
 								screen.priority(), pri, 0);
 					}
 					else
@@ -525,7 +525,7 @@ void m92_state::m92_draw_tiles(screen_device &screen, bitmap_ind16 &bitmap,const
 	m_pf_layer[0].wide_tmap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER1, 0);
 	m_pf_layer[0].tmap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER1, 0);
 	m_pf_layer[0].wide_tmap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER0, 1);
-	m_pf_layer[0].tmap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER0, 1);
+	//m_pf_layer[0].tmap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER0, 1);
 }
 
 
