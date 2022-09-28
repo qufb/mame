@@ -205,6 +205,13 @@ void m92_state::master_control_w(offs_t offset, uint16_t data, uint16_t mem_mask
 			/* update VRAM base (bits 0-1) */
 			layer->vram_base = (m_pf_master_control[offset] & 3) * 0x2000;
 
+			/* disable HUD */
+			if (layer-> vram_base == 0x6000) {
+				layer->tmap->enable(false);
+				layer->wide_tmap->enable(false);
+				break;
+			}
+
 			/* update size (bit 2) */
 			if (m_pf_master_control[offset] & 0x04)
 			{
@@ -260,9 +267,9 @@ VIDEO_START_MEMBER(m92_state,m92)
 
 		/* set scroll offsets */
 		layer->tmap->set_scrolldx(2 * laynum, -2 * laynum + 8);
-		layer->tmap->set_scrolldy(-128, -128);
+		layer->tmap->set_scrolldy(-128+8, -128+8);
 		layer->wide_tmap->set_scrolldx(2 * laynum - 256, -2 * laynum + 8 - 256);
-		layer->wide_tmap->set_scrolldy(-128, -128);
+		layer->wide_tmap->set_scrolldy(-128+8, -128+8);
 
 		/* layer group 0 - totally transparent in front half */
 		layer->tmap->set_transmask(0, 0xffff, (laynum == 2) ? 0x0000 : 0x0001);
@@ -305,9 +312,9 @@ VIDEO_START_MEMBER(m92_state,ppan)
 
 		/* set scroll offsets */
 		layer->tmap->set_scrolldx(2 * laynum + 11, -2 * laynum + 11);
-		layer->tmap->set_scrolldy(-8, -8);
+		layer->tmap->set_scrolldy(-8+8, -8+8);
 		layer->wide_tmap->set_scrolldx(2 * laynum - 256 + 11, -2 * laynum + 11 - 256);
-		layer->wide_tmap->set_scrolldy(-8, -8);
+		layer->wide_tmap->set_scrolldy(-8+8, -8+8);
 	}
 }
 
@@ -525,7 +532,7 @@ void m92_state::m92_draw_tiles(screen_device &screen, bitmap_ind16 &bitmap,const
 	m_pf_layer[0].wide_tmap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER1, 0);
 	m_pf_layer[0].tmap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER1, 0);
 	m_pf_layer[0].wide_tmap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER0, 1);
-	//m_pf_layer[0].tmap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER0, 1);
+	m_pf_layer[0].tmap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_LAYER0, 1);
 }
 
 
