@@ -226,7 +226,7 @@ protected:
 
 	// debugger hooks
 	bool debugger_enabled() const { return bool(device().machine().debug_flags & DEBUG_FLAG_ENABLED); }
-	void debugger_instruction_hook(offs_t curpc)
+	virtual void debugger_instruction_hook(offs_t curpc)
 	{
 		if (device().machine().debug_flags & DEBUG_FLAG_CALL_HOOK)
 			device().debug()->instruction_hook(curpc);

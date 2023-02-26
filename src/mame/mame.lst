@@ -38731,6 +38731,9 @@ saturnjp                        // 1994 Sega Saturn (Japan)
 saturnkr                        // 1995 Samsung Saturn (Korea)
 vsaturn                         // JVC V-Saturn
 
+@source:sega/saturn_test.cpp
+saturn_test                     //
+
 @source:sega/sderby2.cpp
 sderby2                         // (c) 1985
 
