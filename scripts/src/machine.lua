@@ -37,6 +37,8 @@ files {
 files {
 	MAME_DIR .. "src/devices/imagedev/bitbngr.cpp",
 	MAME_DIR .. "src/devices/imagedev/bitbngr.h",
+	MAME_DIR .. "src/devices/imagedev/booklet.cpp",
+	MAME_DIR .. "src/devices/imagedev/booklet.h",
 	MAME_DIR .. "src/devices/imagedev/cartrom.cpp",
 	MAME_DIR .. "src/devices/imagedev/cartrom.h",
 	MAME_DIR .. "src/devices/imagedev/cassette.cpp",
@@ -4253,6 +4255,18 @@ if (MACHINES["STEPPERS"]~=null) then
 	files {
 		MAME_DIR .. "src/devices/machine/steppers.cpp",
 		MAME_DIR .. "src/devices/machine/steppers.h",
+	}
+end
+
+---------------------------------------------------
+--
+--@src/devices/machine/storyware.h,MACHINES["STORYWARE"] = true
+---------------------------------------------------
+
+if (MACHINES["STORYWARE"]~=null) then
+	files {
+		MAME_DIR .. "src/devices/machine/storyware.cpp",
+		MAME_DIR .. "src/devices/machine/storyware.h",
 	}
 end
 

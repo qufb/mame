@@ -112,6 +112,18 @@ if (SOUNDS["AC97"]~=null) then
 end
 
 
+---------------------------------------------------
+-- AP2010
+--@src/devices/sound/ap2010pcm.h,SOUNDS["AP2010"] = true
+---------------------------------------------------
+
+if (SOUNDS["AP2010"]~=null) then
+	files {
+		MAME_DIR .. "src/devices/sound/ap2010pcm.cpp",
+		MAME_DIR .. "src/devices/sound/ap2010pcm.h",
+	}
+end
+
 
 ---------------------------------------------------
 -- Apple custom sound chips
