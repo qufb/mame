@@ -136,7 +136,10 @@
 
 #include "bus/generic/slot.h"
 #include "bus/generic/carts.h"
+#include "bus/midi/midi.h"
 #include "cpu/arm7/ap2010cpu.h"
+#include "machine/ap2010midi.h"
+#include "machine/clock.h"
 #include "machine/timer.h"
 #include "machine/storyware.h"
 #include "sound/ap2010pcm.h"
@@ -164,6 +167,8 @@ namespace {
 #define ROM_FLASH_BASE 0xa0000000
 #define UNKNOWN_ADDR 0xffffffff
 
+#define MIDI_UART_HZ 31250
+
 class sega_beena_state : public driver_device
 {
 public:
@@ -172,6 +177,8 @@ public:
 		, m_maincpu(*this, "maincpu")
 		, m_workram(*this, "workram")
 		, m_pcm(*this, "pcm")
+		, m_midi(*this, "midi")
+		, m_midi_stream(*this, "midi_stream")
 		, m_cart(*this, "cartslot")
 		, m_cart_region(nullptr)
 		, m_screen_main(*this, "screen")
@@ -255,6 +262,8 @@ private:
 	uint32_t midi_reg_r(offs_t offset);
 	void midi_reg_w(offs_t offset, uint32_t data, uint32_t mem_mask = ~0);
 
+	void write_midi_clock(int state) { m_midi->write_txc(state); }
+
 	static constexpr int16_t signed10(uint32_t number)
 	{
 		return util::sext(number, 10);
@@ -268,6 +277,8 @@ private:
 	required_device<ap2010cpu_device> m_maincpu;
 	required_shared_ptr<uint32_t> m_workram;
 	required_device<ap2010pcm_device> m_pcm;
+	required_device<ap2010midi_device> m_midi;
+	required_device<midi_stream_device> m_midi_stream;
 	bool m_requested_fiq;
 	uint32_t m_irq_wait_start_addr;
 
@@ -780,10 +791,24 @@ void sega_beena_state::midi_reg_w(offs_t offset, uint32_t data, uint32_t mem_mas
 {
 	LOG("midi_reg_w @ %08x: addr=%08x data=%08x mask=%08x\n", m_maincpu->pc(), offset * 4, data, mem_mask);
 
-	if (offset == 0x8/4) {
-		// Games can hang waiting for audio status to be busy then ready.
-		// FIXME: Guessed delay, review after audio decoding is implemented.
-		m_midi_busy_count = 10;
+	switch (offset) {
+		case 0x4/4:
+			if ((data & 5) == 5) {
+				m_midi_stream->all_notes_off();
+				m_midi_stream->clear();
+			}
+			break;
+		case 0x8/4:
+			m_midi_stream->parse(data);
+			// Games wait before sending additional notes,
+			// checking if audio status is busy then ready.
+			m_midi_busy_count = 1;
+			break;
+		case 0xc/4:
+			m_midi_stream->passthrough_event(data);
+			break;
+		case 0x18/4:
+			m_midi_stream->update_divisor(data);
 	}
 
 	COMBINE_DATA(&m_midi_regs[offset]);
@@ -1907,6 +1932,14 @@ void sega_beena_state::sega_beena(machine_config &config)
 	AP2010PCM(config, m_pcm); // Unknown clock
 	m_pcm->add_route(ALL_OUTPUTS, "speaker", 1.0);
 
+	MIDI_PORT(config, "mdout", midiout_slot, "midiout");
+	clock_device &midi_clock(CLOCK(config, "midi_clock", MIDI_UART_HZ));
+	midi_clock.signal_handler().set(FUNC(sega_beena_state::write_midi_clock));
+	AP2010MIDI(config, m_midi);
+	m_midi->txd_handler().set("mdout", FUNC(midi_port_device::write_txd));
+	MIDI_STREAM(config, m_midi_stream);
+	m_midi_stream->set_write_handler(m_midi, FUNC(ap2010midi_device::write));
+
 	GENERIC_CARTSLOT(config, m_cart, generic_plain_slot, "sega_beena_cart");
 	m_cart->set_endian(ENDIANNESS_BIG);
 	m_cart->set_width(GENERIC_ROM32_WIDTH);
@@ -1920,6 +1953,12 @@ ROM_START( beena )
 	// SoC internal BIOS dumped with a JTAG debugger.
 	ROM_REGION32_BE( 0x20000, "maincpu", 0 )
 	ROM_LOAD( "beenabios.bin", 0x00000000, 0x20000, CRC(5471aaf8) SHA1(33d756b6c64afb0fa377b3f85ab74505e9ae2f9c) )
+
+	// SoC MIDI synthesizer parameters and PCM data.
+	// Control ROM doesn't appear to be memory-mapped, so this data will only
+	// be usable when the synthesizer gets reverse engineered.
+	// ROM_REGION32_BE( 0x8000, "midipcm", 0 )
+	// ROM_LOAD( "beenamidipcm.bin", 0x70020000, 0x8000, CRC(ed336d29) SHA1(4af7b7cf7fc4fe8b7a514cde91f930a582742509) )
 ROM_END
 
 } // anonymous namespace

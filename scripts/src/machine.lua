@@ -5253,3 +5253,27 @@ if (MACHINES["TC9223"]~=null) then
 		MAME_DIR .. "src/devices/machine/tc9223.h",
 	}
 end
+
+---------------------------------------------------
+--
+--@src/devices/machine/ap2010midi.h,MACHINES["AP2010MIDI"] = true
+---------------------------------------------------
+
+if (MACHINES["AP2010MIDI"]~=null) then
+	files {
+		MAME_DIR .. "src/devices/machine/ap2010midi.cpp",
+		MAME_DIR .. "src/devices/machine/ap2010midi.h",
+	}
+end
+
+---------------------------------------------------
+--
+--@src/devices/machine/midistream.h,MACHINES["MIDI_STREAM"] = true
+---------------------------------------------------
+
+if (MACHINES["MIDI_STREAM"]~=null) then
+	files {
+		MAME_DIR .. "src/devices/machine/midistream.cpp",
+		MAME_DIR .. "src/devices/machine/midistream.h",
+	}
+end
